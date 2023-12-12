@@ -1,5 +1,7 @@
-const API = process.env.REACT_APP_API_URL;
-const VERSION = process.env.REACT_APP_API_VERSION;
+require("dotenv").config();
+
+const API = process.env.API_URL;
+const VERSION = process.env.API_VERSION;
 
 const endPoints = {
   encuesSatisIlforno: {
