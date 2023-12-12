@@ -32,13 +32,12 @@ export const postEncuesta = createAsyncThunk(
   "encuesSatisIlforno/postEncuesta",
   async ({nuevaEncuesta}, { dispatch }) => {
     try {
-      console.log(endPoints);
+      console.log(process.env);
       dispatch(setLoading(true));
       await useAxios("post", endPoints.encuesSatisIlforno.addEncuesta, nuevaEncuesta);
       dispatch(setLoading(false));
       dispatch(setActiveStep(3));
     } catch (error) {
-      console.log(error);
       dispatch(setLoading(false));
       dispatch(setSnackbar({ children: error, severity: "error" }));
     }
