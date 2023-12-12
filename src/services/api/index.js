@@ -1,7 +1,7 @@
-require("dotenv").config();
+const isDevelopment = process.env.NODE_ENV === 'development';
 
-const API = process.env.API_URL;
-const VERSION = process.env.API_VERSION;
+const API = isDevelopment ? process.env.API_URL : 'https://lareceta-server.azurewebsites.net/api';
+const VERSION = isDevelopment ? process.env.API_VERSION : '/v1';
 
 const endPoints = {
   encuesSatisIlforno: {
