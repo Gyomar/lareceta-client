@@ -32,7 +32,6 @@ export const postEncuesta = createAsyncThunk(
   "encuesSatisIlforno/postEncuesta",
   async ({nuevaEncuesta}, { dispatch }) => {
     try {
-      console.log(process.env);
       dispatch(setLoading(true));
       await useAxios("post", endPoints.encuesSatisIlforno.addEncuesta, nuevaEncuesta);
       dispatch(setLoading(false));
