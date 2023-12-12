@@ -11,12 +11,12 @@ const initialState = {
   calificaServicio: 0,
   calificaNps: 0,
   mejora: {
-    presentacionProducto: {estado: false, valor: "Presentacion del producto"},
+    presentacionProducto: {estado: false, valor: "Presentación del producto"},
     calidadProducto: {estado: false, valor: "Calidad del producto"},
     temperaturaProducto: {estado: false, valor: "Temperatura del producto"},
     tiempoEspera: {estado: false, valor: "Tiempos de Servicio o espera"},
     actitudAsesores: {estado: false, valor: "Actitud de los asesores"},
-    variedadMenu: {estado: false, valor: "Variedad del menu"},
+    variedadMenu: {estado: false, valor: "Variedad del menú"},
     ambientes: {estado: false, valor: "Ambiente de los restaurantes"},
     precios: {estado: false, valor: "Precios"}
   },
@@ -28,61 +28,19 @@ const initialState = {
   email: ""
 };
 
-export const fetchEncuesta = createAsyncThunk(
-  "encuesSatisIlforno/fetchEncuesta",
-  async ({limit, offset}, { dispatch }) => {
-    try {
-      dispatch(setLoading(true));
-      const encuestasCount = await useAxios("get", endPoints.getCountEncuestas);
-      const encuestasRes = await useAxios("get", endPoints.getEncuestas(limit, offset));
-      dispatch(setCountEncuestas(encuestasCount));
-      dispatch(setEncuestas(encuestasRes));
-      dispatch(setLoading(false));
-    } catch (error) {
-      console.log(error);
-    }
-  }
-);
-
 export const postEncuesta = createAsyncThunk(
   "encuesSatisIlforno/postEncuesta",
   async ({nuevaEncuesta}, { dispatch }) => {
     try {
+      console.log(endPoints);
       dispatch(setLoading(true));
       await useAxios("post", endPoints.encuesSatisIlforno.addEncuesta, nuevaEncuesta);
       dispatch(setLoading(false));
       dispatch(setActiveStep(3));
     } catch (error) {
+      console.log(error);
       dispatch(setLoading(false));
       dispatch(setSnackbar({ children: error, severity: "error" }));
-    }
-  }
-);
-
-export const delEncuesta = createAsyncThunk(
-  "encuesSatisIlforno/delEncuesta",
-  async ({filaid, limit, offset}, { dispatch }) => {
-    try {
-      dispatch(setLoading(true));
-      await useAxios("delete", endPoints.deleteEncuesta(filaid));
-      dispatch(fetchEncuesta({limit, offset}));
-      dispatch(setLoading(false));
-    } catch (error) {
-      console.log(error);
-    }
-  }
-);
-  
-export const patchEncuesta = createAsyncThunk(
-  "encuesSatisIlforno/putEncuesta",
-  async ({filaid, updatedRecord, limit, offset}, { dispatch }) => {
-    try {
-      dispatch(setLoading(true));
-      await useAxios("patch", endPoints.updateEncuesta(filaid), updatedRecord);
-      dispatch(fetchEncuesta({limit, offset}));
-      dispatch(setLoading(false));
-    } catch (error) {
-      console.log(error);
     }
   }
 );
