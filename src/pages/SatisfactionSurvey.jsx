@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
@@ -12,9 +12,9 @@ import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import IlfornoFondo from "@images/ilforno-fondo-fa864180.webp";
-import LogoIlforno from "@images/logo-bdc31858.webp";
-import GraficoIlforno from "@images/grafico-1-542ba601.webp";
+import IlfornoFondo from "../assets/images/ilforno-fondo-fa864180.webp";
+import LogoIlforno from "../assets/images/logo-bdc31858.webp";
+import GraficoIlforno from "../assets/images/grafico-1-542ba601.webp";
 import PropTypes from "prop-types";
 import Rating from "@mui/material/Rating";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
@@ -34,6 +34,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import FormGroup from "@mui/material/FormGroup";
+import { v4 as uuidv4 } from 'uuid';
 import {
   postEncuesta,
   setActiveStep,
@@ -49,10 +50,10 @@ import {
   setCedula,
   setCelular,
   setEmail,
-} from "@reducers/encues_satis_ilforno.slice";
-import { setSnackbar } from "@reducers/ui.slice";
+} from "../services/reducers/encues_satis_ilforno.slice";
+import { setSnackbar } from "../services/reducers/ui.slice";
 
-const Alert = React.forwardRef(function Alert(props, ref) {
+const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
@@ -94,8 +95,6 @@ IconContainer.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-const { v4: uuidv4 } = require("uuid");
-
 const currentDate = dayjs();
 
 const generateUuidV4 = () => {
@@ -103,13 +102,17 @@ const generateUuidV4 = () => {
 };
 
 const generarCadenaMejora = (objeto) => {
-  let cadenaGeneradaMejora = "";
+  let cadenaGeneradaMejora = null;
   for (const key in objeto) {
+    // eslint-disable-next-line no-prototype-builtins
     if (objeto.hasOwnProperty(key) && objeto[key].estado) {
       cadenaGeneradaMejora += objeto[key].valor + ", ";
     }
   }
-  cadenaGeneradaMejora = cadenaGeneradaMejora.trim().slice(0, -1);
+
+  if(cadenaGeneradaMejora !== null){
+    cadenaGeneradaMejora = cadenaGeneradaMejora.trim().slice(0, -1);
+  }
 
   return cadenaGeneradaMejora;
 };
@@ -154,17 +157,16 @@ const SatisfactionSurvey = () => {
     const searchParams = new URLSearchParams(location.search);
     dispatch(setPuntoVenta(searchParams.get("encuesta_key")));
     dispatch(setId(generateUuidV4()));
-  }, [location.search]);
+  }, [dispatch, location.search]);
 
   useEffect(() => {
-    const isNombreLengthValid = nombre !== "" ? nombre.length >= 2 : true;
+    const isNombreLengthValid = nombre !== ""  ? nombre.length >= 2 : true;
     const isApellidoLengthValid = apellido !== "" ? apellido.length >= 2 : true;
     const isCedulaLengthValid =
       cedula !== "" ? cedula.length >= 5 && cedula.length <= 10 : true;
     const isCelularLengthValid = celular !== "" ? celular.length === 10 : true;
     const isEmailLengthValid =
-      email !== ""
-        ? email.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      email !== "" ? email.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
         : true;
     setNombreValido(isNombreLengthValid);
     setApellidoValido(isApellidoLengthValid);
@@ -190,9 +192,9 @@ const SatisfactionSurvey = () => {
       isCedulaValido: "Cédula no válida",
       isCelularValido: "Número de celular no válido",
       isEmailValido: "Correo electrónico no válido",
-      calificaProducto: "Calificacion de producto requerida",
-      calificaServicio: "Calificación de servicio requerida",
-      calificaNps: "Calificación NPS requerida",
+      calificaProducto: "Calificación de producto no válida",
+      calificaServicio: "Calificación de servicio no válida",
+      calificaNps: "Calificación NPS no válida",
     };
 
     const invalidFields = [];
@@ -217,12 +219,12 @@ const SatisfactionSurvey = () => {
             calificaServicio: calificaServicio,
             calificaNps: calificaNps,
             mejora: generarCadenaMejora(mejora),
-            nota: nota,
-            nombre: nombre,
-            apellido: apellido,
-            cedula: parseInt(cedula),
-            celular: parseInt(celular),
-            email: email,
+            nota: nota === '' ? null : nota,
+            nombre: nombre === '' ? null : nombre,
+            apellido: apellido === '' ? null : apellido,
+            cedula: cedula === '' ? null : parseInt(cedula),
+            celular: celular === '' ? null : parseInt(celular),
+            email: email === '' ? null : email,
           },
         })
       );
@@ -761,8 +763,8 @@ const SatisfactionSurvey = () => {
                   spacing={2}
                 >
                   <Typography>Has finalizado la encuesta</Typography>
-                  <Link href="/">
-                    <Button sx={{ mt: 1, mr: 1 }} color="secondary">
+                  <Link href={"/?encuesta_key=" + puntoVenta }>
+                    <Button  sx={{ mt: 1, mr: 1 }} color="secondary">
                       Salir
                     </Button>
                   </Link>

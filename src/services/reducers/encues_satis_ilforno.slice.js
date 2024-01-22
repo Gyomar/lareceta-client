@@ -1,50 +1,56 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { useAxios } from "@hooks/useAxios";
-import endPoints from '@api';
-import { setLoading, setSnackbar } from "@reducers/ui.slice";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import endPoints from '../api';
+import { setLoading, setSnackbar } from './ui.slice';
 
 const initialState = {
   activeStep: 0,
-  id: "",
-  puntoVenta: "",
+  id: '',
+  puntoVenta: '',
   calificaProducto: 0,
   calificaServicio: 0,
   calificaNps: 0,
   mejora: {
-    presentacionProducto: {estado: false, valor: "Presentación del producto"},
-    calidadProducto: {estado: false, valor: "Calidad del producto"},
-    temperaturaProducto: {estado: false, valor: "Temperatura del producto"},
-    tiempoEspera: {estado: false, valor: "Tiempos de Servicio o espera"},
-    actitudAsesores: {estado: false, valor: "Actitud de los asesores"},
-    variedadMenu: {estado: false, valor: "Variedad del menú"},
-    ambientes: {estado: false, valor: "Ambiente de los restaurantes"},
-    precios: {estado: false, valor: "Precios"}
+    presentacionProducto: { estado: false, valor: 'Presentacion del producto' },
+    calidadProducto: { estado: false, valor: 'Calidad del producto' },
+    temperaturaProducto: { estado: false, valor: 'Temperatura del producto' },
+    tiempoEspera: { estado: false, valor: 'Tiempos de Servicio o espera' },
+    actitudAsesores: { estado: false, valor: 'Actitud de los asesores' },
+    variedadMenu: { estado: false, valor: 'Variedad del menu' },
+    ambientes: { estado: false, valor: 'Ambiente de los restaurantes' },
+    precios: { estado: false, valor: 'Precios' },
   },
-  nota: "",
-  nombre: "",
-  apellido: "",
-  cedula: "",
-  celular: "",
-  email: ""
+  nota: '',
+  nombre: '',
+  apellido: '',
+  cedula: '',
+  celular: '',
+  email: '',
 };
 
 export const postEncuesta = createAsyncThunk(
-  "encuesSatisIlforno/postEncuesta",
-  async ({nuevaEncuesta}, { dispatch }) => {
+  'encuesSatisIlforno/postEncuesta',
+  async ({ nuevaEncuesta }, { dispatch }) => {
     try {
       dispatch(setLoading(true));
-      await useAxios("post", endPoints.encuesSatisIlforno.addEncuesta, nuevaEncuesta);
+      await axios.post(
+        endPoints.encuesSatisIlforno.addEncuesta,
+        nuevaEncuesta,
+        {
+          headers: { Auth: endPoints.apiKey },
+        },
+      );
       dispatch(setLoading(false));
       dispatch(setActiveStep(3));
     } catch (error) {
       dispatch(setLoading(false));
-      dispatch(setSnackbar({ children: error, severity: "error" }));
+      dispatch(setSnackbar({ children: error, severity: 'error' }));
     }
-  }
+  },
 );
 
 export const encuesSatisIlfornoSlice = createSlice({
-  name: "encuesSatisIlforno",
+  name: 'encuesSatisIlforno',
   initialState,
   reducers: {
     setActiveStep: (state, action) => {
@@ -89,6 +95,20 @@ export const encuesSatisIlfornoSlice = createSlice({
   },
 });
 
-export const { setActiveStep, setId, setPuntoVenta, setCalificaProducto, setCalificaServicio, setCalificaNps, setMejora, setNota, setNombre, setApellido, setCedula, setCelular, setEmail} = encuesSatisIlfornoSlice.actions;
+export const {
+  setActiveStep,
+  setId,
+  setPuntoVenta,
+  setCalificaProducto,
+  setCalificaServicio,
+  setCalificaNps,
+  setMejora,
+  setNota,
+  setNombre,
+  setApellido,
+  setCedula,
+  setCelular,
+  setEmail,
+} = encuesSatisIlfornoSlice.actions;
 
 export default encuesSatisIlfornoSlice.reducer;
