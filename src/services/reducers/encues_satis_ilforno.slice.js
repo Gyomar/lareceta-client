@@ -44,7 +44,7 @@ export const postEncuesta = createAsyncThunk(
       dispatch(setActiveStep(3));
     } catch (error) {
       dispatch(setLoading(false));
-      dispatch(setSnackbar({ children: error, severity: 'error' }));
+      dispatch(setSnackbar({ children: 'Intente de Nuevo mas tarde', severity: 'error' }));
     }
   },
 );
